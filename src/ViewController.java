@@ -41,7 +41,7 @@ public class ViewController {
                 //init JFrame
                 frame = new JFrame("FitnessApp");
                 frame.setVisible(true);
-                frame.setSize(380, 600);
+                frame.setSize(380, 700);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 
                 //Init JPanels
@@ -113,27 +113,58 @@ public class ViewController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(mp);
+                frame.repaint();
+                frame.revalidate();
             }
         });
         ep.getAddBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(addExPanel);
+                frame.repaint();
+                frame.revalidate();
             }
         });
         ep.setExerciseNames(modelController.g_ExerciseList());
+        ep.getRemoveBtn().addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int choice = JOptionPane.showConfirmDialog(ep, 
+                        "Are you sure you want to remove this exercise?");
+                if (choice == JOptionPane.YES_OPTION){
+                    String exName = (String)ep.getExerciseList().getSelectedValue();
+                    if (modelController.d_Exercise(exName)){
+                        JOptionPane.showMessageDialog(ep, "Exercise Removed");
+                        String[] exNames = modelController.g_ExerciseList();
+                        ep.getExerciseList().setListData(exNames);
+                        ep.repaint();
+                        ep.revalidate();
+                        
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(ep, "Failed to remove exercise");
+                    }
+                }
+                
+            }
+        });
+        
     }
     private void initExerciseRecordPanel(){
         erp.getBackBtn().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(mp);
+                frame.repaint();
+                frame.revalidate();
             }
         });
         erp.getAddBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(addExRecordPanel);
+                frame.repaint();
+                frame.revalidate();
             }
         });
         DefaultComboBoxModel cmbModel = 
@@ -141,8 +172,13 @@ public class ViewController {
         erp.getExerciseCmb().setModel(cmbModel);
         String selected = (String)erp.getExerciseCmb().getSelectedItem();
         double[] x = modelController.g_ERWeight(selected);
+        try{
         if (!(x.length==0)){
             erp.getChart().addSeries(selected, x, x);
+        }
+        }
+        catch(NullPointerException e){
+            System.out.println("Null pointer exception");
         }
         erp.getExerciseCmb().addItemListener(new ItemListener(){
             @Override
@@ -150,6 +186,10 @@ public class ViewController {
                 System.out.println(e.getStateChange());
                 if (e.getStateChange() == 1){
                     String selected = (String)erp.getExerciseCmb().getSelectedItem();
+                    //change exrList items
+                    Object[] records = modelController.g_ExerciseRecordList(selected);
+                    erp.getExrList().setListData(records);
+                    //update graph
                     double[] x = modelController.g_ERWeight(selected);
                     String[] exNames = modelController.g_ExerciseList();
                     try{
@@ -162,25 +202,48 @@ public class ViewController {
                         erp.repaint();
                         erp.revalidate();
                     }catch(IllegalArgumentException exception){
-                        //erp.getChart().updateXYSeries(selected, x, x, x);
-                        System.out.println(exception.getMessage());
+                        System.out.println("Empty Series");
                     }
                 }
             }
         });
-        
+        erp.getRemoveBtn().addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object o = erp.getExrList().getSelectedValue();
+                System.out.println(o);
+                if (modelController.d_ExerciseRecord(o)){
+                    JOptionPane.showMessageDialog(erp, "Record removed");
+                    String selected = (String)erp.getExerciseCmb().getSelectedItem();
+                    erp.getExrList().setListData(modelController.g_ExerciseRecordList(selected));
+                    double[] weights = modelController.g_ERWeight(selected);
+                    erp.getChart().removeSeries(selected);
+                    erp.getChart().addSeries(selected, weights);
+                    erp.repaint();
+                    erp.revalidate();
+                }
+                else {
+                    JOptionPane.showMessageDialog(erp, "Failed to remove record");
+                }
+            }
+        });
     }
     private void initCalorieRecordPanel(){
         crp.getBackBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(mp);
+                frame.repaint();
+                frame.revalidate();
             }
         });
         crp.getAddBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(addCalRecordPanel);
+                frame.repaint();
+                frame.revalidate();
+                
             }
         });
         String dailyCals =  String.valueOf(modelController.g_DailyCalories(new Date()));
@@ -191,18 +254,46 @@ public class ViewController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(mp);
+                frame.repaint();
+                frame.revalidate();
             }
         });
         bwrp.getAddBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(addBwRecordPanel);
+                frame.repaint();
+                frame.revalidate();
             }
         });
         double[] x = modelController.g_BWRWeight();
         if (x.length != 0){
             bwrp.getChart().addSeries("Bodyweight", x);
         }
+        Object[] list = modelController.g_BodyweightRecordList();
+        bwrp.getBwrList().setListData(list);
+        bwrp.getRemoveBtn().addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object o = bwrp.getBwrList().getSelectedValue();
+                if (modelController.d_BodyWeightRecord(o)){
+                    JOptionPane.showMessageDialog(bwrp, "Removed record");
+                    Object[] list = modelController.g_BodyweightRecordList();
+                    double[] weight = modelController.g_BWRWeight();
+                    bwrp.getBwrList().setListData(list);
+                    bwrp.getChart().removeSeries("Bodyweight");
+                    if (weight.length != 0){
+                        bwrp.getChart().addSeries("Bodyweight", weight);
+                    }
+                    bwrp.repaint();
+                    bwrp.revalidate();
+                    
+                }
+                else{
+                    JOptionPane.showMessageDialog(bwrp, "Failed to remove record");
+                }
+            }
+        });
     }
     
     private void initAddCalorieRecordPanel(){
@@ -211,6 +302,8 @@ public class ViewController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(crp);
+                frame.repaint();
+                frame.revalidate();
             }
         });
         addCalRecordPanel.getSubmitBtn()
@@ -229,6 +322,8 @@ public class ViewController {
                     String dailyCals =  String.valueOf(modelController.g_DailyCalories(new Date()));
                     crp.getCaloriesLbl().setText(dailyCals);
                     frame.setContentPane(crp);
+                    frame.repaint();
+                    frame.revalidate();
                     JOptionPane.showMessageDialog(crp, "Added Record"
                             ,"Success",JOptionPane.PLAIN_MESSAGE);
                     crp.repaint();
@@ -243,6 +338,8 @@ public class ViewController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(erp);
+                frame.repaint();
+                frame.revalidate();
             }
         });
         addExRecordPanel.getSubmitBtn().addActionListener(new ActionListener(){
@@ -282,6 +379,8 @@ public class ViewController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(ep);
+                frame.repaint();
+                frame.revalidate();
             }
         });
         addExPanel.getSubmitBtn().addActionListener(new ActionListener(){
@@ -316,6 +415,8 @@ public class ViewController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setContentPane(bwrp);
+                frame.repaint();
+                frame.revalidate();
             }
         });
         addBwRecordPanel.getSubmitBtn().addActionListener(new ActionListener(){
@@ -331,11 +432,13 @@ public class ViewController {
                     if (modelController.i_BodyWeightRecord(weightVal)){
                         JOptionPane.showMessageDialog(addBwRecordPanel,
                                 "Success");
+                        Object[] bwrList = modelController.g_BodyweightRecordList();
                         double[] x = modelController.g_BWRWeight();
                         double[] errBar = new double[x.length];
                         try
                         {
                             bwrp.getChart().updateXYSeries("Bodyweight", x, x, errBar);
+                            bwrp.getBwrList().setListData(bwrList);
                         }
                         catch(IllegalArgumentException err){
                             System.out.println("Series was empty, now initialized");

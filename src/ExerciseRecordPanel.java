@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -7,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 
@@ -23,6 +25,7 @@ import org.knowm.xchart.XYChart;
 public class ExerciseRecordPanel extends JPanel {
     private JButton backBtn;
     private JButton addBtn;
+    private JButton removeBtn;
     private JList exrList;
     private XYChart chart;
     private JComboBox exerciseCmb;
@@ -46,34 +49,51 @@ public class ExerciseRecordPanel extends JPanel {
         
         backBtn = new JButton("Back");
         addBtn = new JButton("Add");
+        removeBtn = new JButton("Delete");
+        //create scroll panel for jlist
+        JScrollPane scrollPane = new JScrollPane();
+        
         exrList = new JList();
+        exrList.setPreferredSize(new Dimension(200,100));
+        scrollPane.setViewportView(exrList);
         exerciseCmb = new JComboBox();
         
         backBtn.setBackground(btnColor);
         addBtn.setBackground(btnColor);
+        removeBtn.setBackground(btnColor);
         
         backBtn.setForeground(txtColor);
         addBtn.setForeground(txtColor);
+        removeBtn.setForeground(txtColor);
         
         backBtn.setFont(font);
         addBtn.setFont(font);
+        removeBtn.setFont(font);
         
         c.anchor = GridBagConstraints.PAGE_START;
-        c.fill = GridBagConstraints.HORIZONTAL;
+        //c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 1.0;
         c.weighty = 1.0;
         
         c.gridx = 0;
         c.gridy = 0;
-        add(backBtn, c);
+        this.add(backBtn, c);
         
         c.gridx = 2;
         c.gridy = 0;
-        add(addBtn, c);
+        this.add(addBtn, c);
         
         c.gridx = 1;
         c.gridy = 1;
-        add(exerciseCmb,c);
+        this.add(exerciseCmb, c);
+        
+        c.gridx = 1;
+        c.gridy = 2;
+        this.add(exrList, c);
+        
+        c.gridx = 2;
+        c.gridy = 2;
+        this.add(removeBtn, c);
         
         c.gridx = 0;
         c.gridy = 3;
@@ -100,6 +120,10 @@ public class ExerciseRecordPanel extends JPanel {
 
     public JComboBox getExerciseCmb() {
         return exerciseCmb;
+    }
+
+    public JButton getRemoveBtn() {
+        return removeBtn;
     }
 
     

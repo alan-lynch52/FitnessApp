@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -22,6 +23,7 @@ import org.knowm.xchart.XYChart;
 public class BodyweightRecordPanel extends JPanel {
     private JButton backBtn;
     private JButton addBtn;
+    private JButton removeBtn;
     private JList bwrList;
     private XYChart chart;
     public JButton getBackBtn() {
@@ -39,10 +41,15 @@ public class BodyweightRecordPanel extends JPanel {
     public XYChart getChart() {
         return chart;
     }
+
+    public JButton getRemoveBtn() {
+        return removeBtn;
+    }
     
     BodyweightRecordPanel(){
         backBtn = new JButton("Back");
         addBtn = new JButton("Add");
+        removeBtn = new JButton("Remove");
         bwrList = new JList();
         chart = new XYChart(300,200);
         chart.setTitle("Bodyweight progress");
@@ -63,12 +70,19 @@ public class BodyweightRecordPanel extends JPanel {
         
         backBtn.setBackground(btnColor);
         addBtn.setBackground(btnColor);
+        removeBtn.setBackground(btnColor);
+        bwrList.setBackground(new Color(30, 31, 33));
+        
+        bwrList.setPreferredSize(new Dimension(200,100));
         
         backBtn.setForeground(txtColor);
         addBtn.setForeground(txtColor);
+        removeBtn.setForeground(txtColor);
+        bwrList.setForeground(txtColor);
         
         backBtn.setFont(font);
         addBtn.setFont(font);
+        bwrList.setFont(font);
         
         
         c.anchor = GridBagConstraints.PAGE_START;
@@ -87,6 +101,10 @@ public class BodyweightRecordPanel extends JPanel {
         c.gridx = 1;
         c.gridy = 1;
         add(bwrList, c);
+        
+        c.gridx = 2;
+        c.gridy = 1;
+        add(removeBtn, c);
         
         c.gridx = 0;
         c.gridy = 2;

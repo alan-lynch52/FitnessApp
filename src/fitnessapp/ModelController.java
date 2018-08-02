@@ -92,6 +92,7 @@ public class ModelController {
             }
         }
         //use this index position to grab the id of the exercise
+        try{
         int curExId = exList.get(index).getId();
         //System.out.println(curExId);
         //add all weight values to the list where the exercise id matches
@@ -103,6 +104,11 @@ public class ModelController {
             System.out.println(list[i]);
         }
         return list;
+        }
+        catch(IndexOutOfBoundsException e){
+            System.out.println("Index out of bounds");
+        }
+        return null;
     };
     public double[] g_BWRWeight(){
         bwrList = dc.getBodyweightRecordList();
@@ -122,7 +128,39 @@ public class ModelController {
         }
         return totalCals;
     }
-    
+    public Object[] g_ExerciseRecordList(String name){
+                //System.out.println("Name: "+name);
+        
+        //get the index position of an exercise given the name of the exercise
+        int index = 0;
+        exList = dc.getExerciseList();
+        for (int i = 0; i < exList.size(); i++){
+            String curExName = exList.get(i).getName();
+            if (curExName.matches(name)){
+                index = i;
+            }
+        }
+        //use this index position to grab the id of the exercise
+        int curExId = exList.get(index).getId();
+        //System.out.println(curExId);
+        //add all weight values to the list where the exercise id matches
+        LinkedList<ExerciseRecord> exerciseList = dc.getExerciseRecordList(curExId);
+        Object[] list = new Object[exerciseList.size()];
+        
+        for (int i = 0; i < exerciseList.size(); i++){
+            list[i] = exerciseList.get(i);
+            System.out.println(list[i]);
+        }
+        return list;
+    }
+    public Object[] g_BodyweightRecordList(){
+        bwrList = dc.getBodyweightRecordList();
+        Object[] list = new Object[bwrList.size()];
+        for (int i = 0; i < list.length; i++){
+            list[i] = bwrList.get(i);
+        }
+        return list;
+    }
     /*
         Set of methods that, given an id, will return an 
         object if it is found within the database
@@ -144,7 +182,31 @@ public class ModelController {
         Given an id, delete the object from the database if it exists
     */
     public void d_ExerciseRecord(int id){}
-    public void d_Exercise(int id){}
-    public void d_CalorieRecord(int id){}
-    public void d_BodyWeightRecord(int id){}
+    public boolean d_Exercise(String exName){
+        for (Exercise e : exList){
+            if (e.getName().matches(exName)){
+                if (dc.deleteExercise(e)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean d_ExerciseRecord(Object o){
+        ExerciseRecord er  = (ExerciseRecord)o;
+        if (dc.deleteExerciseRecord(er)){
+            return true;
+        }
+        return false;
+    }
+    public boolean d_CalorieRecord(Object o){
+        return false;
+    }
+    public boolean d_BodyWeightRecord(Object o){
+        BodyWeightRecord bwr = (BodyWeightRecord)o;
+        if (dc.deleteBodyweightRecord(bwr)){
+            return true;
+        }
+        return false;
+    }
 }

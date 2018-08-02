@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 public class ExercisePanel extends JPanel {
     private JButton backBtn;
     private JButton addBtn;
+    private JButton removeBtn;
     private JList exerciseList;
     public ExercisePanel(){
         this.setSize(380,800);
@@ -35,19 +36,24 @@ public class ExercisePanel extends JPanel {
         
         backBtn = new JButton("Back");
         addBtn = new JButton("Add");
+        removeBtn = new JButton("Remove");
         exerciseList = new JList();
         
         //change button colour
         backBtn.setBackground(btnColor);
         addBtn.setBackground(btnColor);
+        removeBtn.setBackground(btnColor);
+        
         exerciseList.setBackground(new Color(30, 31, 33));
         
         backBtn.setForeground(txtColor);
         addBtn.setForeground(txtColor);
+        removeBtn.setForeground(txtColor);
         exerciseList.setForeground(txtColor);
         
         backBtn.setFont(font);
         addBtn.setFont(font);
+        removeBtn.setFont(font);
         exerciseList.setFont(font);
         
         
@@ -74,7 +80,9 @@ public class ExercisePanel extends JPanel {
         c.anchor = GridBagConstraints.BASELINE;
         this.add(exerciseList, c);
         
-
+        c.gridx = 2;
+        c.gridy = 1;
+        this.add(removeBtn, c);
     }
 
     public JButton getBackBtn() {
@@ -91,6 +99,10 @@ public class ExercisePanel extends JPanel {
     
     public void setExerciseNames(String[] names){
         exerciseList.setListData(names);
+    }
+
+    public JButton getRemoveBtn() {
+        return removeBtn;
     }
     
 }

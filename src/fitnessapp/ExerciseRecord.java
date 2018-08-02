@@ -55,10 +55,12 @@ public class ExerciseRecord {
     public void setRecordDate(Date recordDate) {
         this.recordDate = recordDate;
     }
+    public String print(){
+        return "weight: " + weight + ", date: " + recordDate;
+    }
 
     @Override
     public String toString() {
-        return "ExerciseRecord{" + "id=" + id + ", exerciseId=" + exerciseId + ", weight=" + weight + ", recordDate=" + recordDate + '}';
+        return "id=" + id + ", exId=" + exerciseId + ", weight=" + weight + ", date=" + recordDate + '}';
     }
-    
 }

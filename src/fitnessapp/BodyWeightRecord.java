@@ -48,7 +48,7 @@ public class BodyWeightRecord {
 
     @Override
     public String toString() {
-        return "BodyWeightRecord{" + "id=" + id + ", weight=" + weight + ", recordDate=" + recordDate + '}';
+        return "id=" + id + ", weight=" + weight + ", date=" + recordDate;
     }
     
     
