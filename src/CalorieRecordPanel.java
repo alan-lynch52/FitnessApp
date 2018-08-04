@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -21,14 +22,16 @@ import javax.swing.JPanel;
 public class CalorieRecordPanel extends JPanel{
     private JButton backBtn;
     private JButton addBtn;
+    private JButton removeBtn;
     private JList crList;
     private JLabel caloriesNameLbl;
     private JLabel caloriesLbl;
     CalorieRecordPanel(){
         backBtn = new JButton("Back");
         addBtn = new JButton("Add");
+        removeBtn = new JButton("Remove");
         crList = new JList();
-        caloriesNameLbl = new JLabel("Calories:");
+        caloriesNameLbl = new JLabel("Todays Calories:");
         caloriesLbl = new JLabel();
         
         
@@ -44,19 +47,26 @@ public class CalorieRecordPanel extends JPanel{
         
         //add components
         
+        crList.setPreferredSize(new Dimension(100,200));
+        
         backBtn.setBackground(btnColor);
         addBtn.setBackground(btnColor);
+        removeBtn.setBackground(btnColor);
         
         
         backBtn.setForeground(txtColor);
         addBtn.setForeground(txtColor);
+        removeBtn.setForeground(txtColor);
         caloriesLbl.setForeground(txtColor);
         caloriesNameLbl.setForeground(txtColor);
+        crList.setForeground(txtColor);
         
         backBtn.setFont(font);
         addBtn.setFont(font);
+        removeBtn.setFont(font);
         caloriesLbl.setFont(font);
         caloriesNameLbl.setFont(font);
+        crList.setFont(font);
         
         
         
@@ -75,7 +85,11 @@ public class CalorieRecordPanel extends JPanel{
         
         c.gridx = 1;
         c.gridy = 1;
-        //this.add(crList, c);
+        this.add(crList, c);
+        
+        c.gridx = 2;
+        c.gridy = 1;
+        this.add(removeBtn, c);
         
         c.gridx = 1;
         c.gridy = 2;
@@ -100,6 +114,10 @@ public class CalorieRecordPanel extends JPanel{
 
     public JLabel getCaloriesLbl() {
         return caloriesLbl;
+    }
+
+    public JButton getRemoveBtn() {
+        return removeBtn;
     }
     
 }

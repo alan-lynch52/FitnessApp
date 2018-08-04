@@ -48,7 +48,7 @@ public class CalorieRecord {
 
     @Override
     public String toString() {
-        return "CalorieRecord{" + "id=" + id + ", calories=" + calories + ", recordDate=" + recordDate + '}';
+        return "id=" + id + ", calories=" + calories + ", date=" + recordDate;
     }
     
 }

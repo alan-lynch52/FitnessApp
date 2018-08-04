@@ -248,6 +248,28 @@ public class ViewController {
         });
         String dailyCals =  String.valueOf(modelController.g_DailyCalories(new Date()));
         crp.getCaloriesLbl().setText(dailyCals);
+        Object[] crList = modelController.g_CalorieRecordList();
+        crp.getCrList().setListData(crList);
+        crp.getRemoveBtn().addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object selected = crp.getCrList().getSelectedValue();
+                if (modelController.d_CalorieRecord(selected)){
+                    JOptionPane.showMessageDialog(crp, "Removed record");
+                    //update calorie list
+                    Object[] crList = modelController.g_CalorieRecordList();
+                    crp.getCrList().setListData(crList);
+                    String dailyCals = String.valueOf(modelController.g_DailyCalories(new Date()));
+                    crp.getCaloriesLbl().setText(dailyCals);
+                    crp.repaint();
+                    crp.revalidate();
+                    
+                }
+                else{
+                    JOptionPane.showMessageDialog(crp, "Failed to remove record");
+                }
+            }
+        });
     }
     private void initBodyweightRecordPanel(){
         bwrp.getBackBtn().addActionListener(new ActionListener(){
@@ -321,6 +343,8 @@ public class ViewController {
                 else {
                     String dailyCals =  String.valueOf(modelController.g_DailyCalories(new Date()));
                     crp.getCaloriesLbl().setText(dailyCals);
+                    Object[] crList = modelController.g_CalorieRecordList();
+                    crp.getCrList().setListData(crList);
                     frame.setContentPane(crp);
                     frame.repaint();
                     frame.revalidate();

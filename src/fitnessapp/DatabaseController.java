@@ -386,8 +386,9 @@ public class DatabaseController {
         //find existing exercise
         for (Object o : exerciseList) {
             JSONObject oJSON = (JSONObject) o;
-            Long oId = (Long) oJSON.get(ID);
-            if (e.getId() == oId.intValue()) {
+            //Long oId = (Long) oJSON.get(ID);
+            int oID = getIntFromObject(oJSON.get(ID));
+            if (e.getId() == oID) {
                 oJSON.put(NAME, e.getName());
                 oJSON.put(DATE,
                         sdf.format(e.getDateAdded()));
@@ -410,7 +411,8 @@ public class DatabaseController {
         //find existing exercise
         for (Object o : erList) {
             JSONObject oJSON = (JSONObject) o;
-            Long oID = (Long) oJSON.get(ID);
+            //Long oID = (Long) oJSON.get(ID);
+            int oID = getIntFromObject(oJSON.get(ID));
             if (oID == er.getId()) {
                 if (checkExerciseId(er.getExerciseId())) {
                     oJSON.put(EXERCISE_ID, er.getExerciseId());
@@ -437,8 +439,9 @@ public class DatabaseController {
         //find existing exercise
         for (Object o : crList) {
             JSONObject oJSON = (JSONObject) o;
-            Long oID = (Long) oJSON.get(ID);
-            if (oID.intValue() == cr.getId()) {
+            //Long oID = (Long) oJSON.get(ID);
+            int oID = getIntFromObject(oJSON.get(ID));
+            if (oID == cr.getId()) {
                 oJSON.put(CALORIES, cr.getCalories());
                 oJSON.put(DATE,
                         sdf.format(cr.getRecordDate()));
@@ -461,8 +464,9 @@ public class DatabaseController {
         //find existing exercise
         for (Object o : bwrList) {
             JSONObject oJSON = (JSONObject) o;
-            Long oID = (Long) oJSON.get(ID);
-            if (oID.intValue() == bwr.getId()) {
+            //Long oID = (Long) oJSON.get(ID);
+            int oID = getIntFromObject(oJSON.get(ID));
+            if (oID == bwr.getId()) {
                 oJSON.put(WEIGHT, bwr.getWeight());
                 oJSON.put(DATE, sdf.format(bwr.getRecordDate()));
                 writeJSON(data);
@@ -485,8 +489,9 @@ public class DatabaseController {
         if (checkExerciseId(e.getId())) {
             for (Object o : exerciseList) {
                 JSONObject obj = (JSONObject) o;
-                Long objId = (Long) obj.get(ID);
-                if (e.getId() == objId.intValue()) {
+                //Long objId = (Long) obj.get(ID);
+                int objID = getIntFromObject(obj.get(ID));
+                if (e.getId() == objID) {
                     exerciseList.remove(obj);
                     writeJSON(data);
                     System.out.println("Removed");
@@ -508,7 +513,8 @@ public class DatabaseController {
                 && checkExerciseRecordId(er.getId())) {
             for (Object o : erList) {
                 JSONObject obj = (JSONObject) o;
-                Long objID = (Long) obj.get(ID);
+                //Long objID = (Long) obj.get(ID);
+                int objID = getIntFromObject(obj.get(ID));
                 if (objID == er.getId()) {
                     erList.remove(obj);
                     writeJSON(data);
@@ -530,8 +536,9 @@ public class DatabaseController {
         if (checkCalorieRecordId(cr.getId())) {
             for (Object o : crList) {
                 JSONObject obj = (JSONObject) o;
-                Long objID = (Long) obj.get(ID);
-                if (objID.intValue() == cr.getId()) {
+                //Long objID = (Long) obj.get(ID);
+                int objID = getIntFromObject(obj.get(ID));
+                if (objID == cr.getId()) {
                     crList.remove(obj);
                     writeJSON(data);
                     System.out.println("Removed");
@@ -552,7 +559,8 @@ public class DatabaseController {
         if (checkBodyweightRecordId(br.getId())) {
             for (Object o : bwList) {
                 JSONObject obj = (JSONObject) o;
-                Long objID = (Long) obj.get(ID);
+                //Long objID = (Long) obj.get(ID);
+                int objID = getIntFromObject(obj.get(ID));
                 if (objID == br.getId()) {
                     bwList.remove(obj);
                     writeJSON(data);

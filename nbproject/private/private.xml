@@ -4,11 +4,10 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Alan/Documents/NetBeansProjects/FitnessApp/src/fitnessapp/ModelController.java</file>
-            <file>file:/C:/Users/Alan/Documents/NetBeansProjects/FitnessApp/src/BodyweightRecordPanel.java</file>
+            <file>file:/C:/Users/Alan/Documents/NetBeansProjects/FitnessApp/src/fitnessapp/CalorieRecord.java</file>
             <file>file:/C:/Users/Alan/Documents/NetBeansProjects/FitnessApp/src/fitnessapp/DatabaseController.java</file>
-            <file>file:/C:/Users/Alan/Documents/NetBeansProjects/FitnessApp/src/fitnessapp/BodyWeightRecord.java</file>
             <file>file:/C:/Users/Alan/Documents/NetBeansProjects/FitnessApp/src/ViewController.java</file>
-            <file>file:/C:/Users/Alan/Documents/NetBeansProjects/FitnessApp/src/ExerciseRecordPanel.java</file>
+            <file>file:/C:/Users/Alan/Documents/NetBeansProjects/FitnessApp/src/CalorieRecordPanel.java</file>
         </group>
     </open-files>
 </project-private>

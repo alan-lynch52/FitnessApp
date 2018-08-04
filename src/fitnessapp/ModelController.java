@@ -161,6 +161,14 @@ public class ModelController {
         }
         return list;
     }
+    public Object[] g_CalorieRecordList(){
+        LinkedList<CalorieRecord> dailyCalList = dc.getCalorieRecordList(new Date());
+        Object[] list = new Object[dailyCalList.size()];
+        for (int i = 0; i < list.length; i++){
+            list[i] = dailyCalList.get(i);
+        }
+        return list;
+    }
     /*
         Set of methods that, given an id, will return an 
         object if it is found within the database
@@ -200,6 +208,10 @@ public class ModelController {
         return false;
     }
     public boolean d_CalorieRecord(Object o){
+        CalorieRecord cr = (CalorieRecord)o;
+        if (dc.deleteCalorieRecord(cr)){
+            return true;
+        }
         return false;
     }
     public boolean d_BodyWeightRecord(Object o){
