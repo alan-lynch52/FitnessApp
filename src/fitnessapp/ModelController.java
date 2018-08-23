@@ -13,17 +13,15 @@ import java.util.LinkedList;
  * @author Alan
  */
 public class ModelController {
-    private DatabaseController dc;
+    private DatabaseController2 dc;
     private LinkedList<Exercise> exList;
     private LinkedList<ExerciseRecord> exrList;
     private LinkedList<CalorieRecord> crList;
     private LinkedList<BodyWeightRecord> bwrList;
+    private String username;
+    private String password;
     public ModelController(){
-        this.dc = new DatabaseController();
-        exList = this.dc.getExerciseList();
-        exrList = this.dc.getExerciseRecordList();
-        crList = this.dc.getCalorieRecordList();
-        bwrList = this.dc.getBodyweightRecordList();
+        this.dc = new DatabaseController2();
     }
     /*
      Set of methods that instantiate the various classes
@@ -31,9 +29,17 @@ public class ModelController {
      Then instantiate the object and then pass this object to the 
      databasecontroller to be added to the db
     */
+    public boolean userSignIn(String username, String password){
+        if (dc.login(username, password)){
+            this.username = username;
+            this.password = password;
+        }
+        return false;
+    }
+    
     public boolean i_ExerciseRecord(String exerciseName, double weight){
-        int id = dc.genExerciseRecordID();
-        int exId = dc.findExerciseID(exerciseName);
+        int id = dc.generateID(username, password, DatabaseController2.EXERCISE_RECORD);
+        int exId = dc.getID(username, password, exerciseName, DatabaseController2.EXERCISE_RECORD_LIST);
         if (exId == -1){
             return false;
         }
@@ -41,31 +47,31 @@ public class ModelController {
         //check with DatabaseController to see if exId exists
         //check with DatabaseController to find next unique id
         //if both exist - create ExerciseRecord and pass to DatabaseController
-        return dc.addExerciseRecord(er);
+        return dc.addRecord(username, password, DatabaseController2.EXERCISE_RECORD, er);
     };
     public boolean i_Exercise(String name){
         //check with DatabaseController to find next unique id
-        int id = dc.genExerciseID();
+        int id = dc.generateID(username, password, DatabaseController2.EXERCISE);
         Exercise e = new Exercise(id,name,new Date());
-        return dc.addExercise(e);
+        return dc.addRecord(username,password, DatabaseController2.EXERCISE, e);
     };
     public boolean i_CalorieRecord(int calories){
         
         //check with DatabaseController to find next unique id
-        int id = dc.genCalorieRecordID();
+        int id = dc.generateID(username, password,DatabaseController2.CALORIE_RECORD);
         if (id == -1){
             return false;
         }
         CalorieRecord cr = new CalorieRecord(id,calories,new Date());
-        return dc.addCalorieRecord(cr);
+        return dc.addRecord(username,password, DatabaseController2.CALORIE_RECORD, cr);
     };
     public boolean i_BodyWeightRecord(double weight){
-        int id = dc.genBodyweightRecordID();
+        int id = dc.generateID(username, password, DatabaseController2.BODYWEIGHT_RECORD);
         if (id == -1){
             return false;
         }
         BodyWeightRecord bwr =  new BodyWeightRecord(id,weight,new Date());
-        return dc.addBodyweightRecord(bwr);
+        return dc.addRecord(username,password,DatabaseController2.BODYWEIGHT_RECORD,bwr);
     };
     
     public String[] g_ExerciseList(){

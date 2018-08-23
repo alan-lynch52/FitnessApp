@@ -51,7 +51,7 @@ public class DatabaseController2 {
      * @param username  -   the user to be created
      * @param password  -   the users password
      */
-    public boolean addUserRequest(String username, String password){
+    public boolean addUser(String username, String password){
         try{
             String urlStr = EC2_HOST + "/add/user";
             URL url = new URL(urlStr);
@@ -77,6 +77,38 @@ public class DatabaseController2 {
             
             con.disconnect();
         }catch(Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+    /**
+     * @param username  the user
+     * @param password  the user's password
+     */
+    public boolean login(String username,String password){
+        try{
+            String urlStr = EC2_HOST+"/login";
+            URL url = new URL(urlStr);
+            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty(USER_AGENT, MOZILLA);
+            con.setDoOutput(true);
+            
+            OutputStream os = con.getOutputStream();
+            JSONObject user = new JSONObject();
+            user.put(KEY_USERNAME, username);
+            user.put(KEY_PASSWORD, password);
+            os.write(user.toJSONString().getBytes(StandardCharsets.UTF_8));
+            os.flush();
+            os.close();
+            if (con.getResponseCode() == 400 || con.getResponseCode() == 404){
+                System.out.println("Bad Request");
+                con.disconnect();
+                return false;
+            }
+            con.disconnect();
+            return true;
+        } catch(Exception e){
             e.printStackTrace();
         }
         return false;
@@ -211,7 +243,7 @@ public class DatabaseController2 {
     * @param rType      -   the record type to be added
     * @param record     -   the record to be added
     */
-    public void addRecord(String username, String password, String rType, Object record){
+    public boolean addRecord(String username, String password, String rType, Object record){
         try{
             String urlStr = EC2_HOST+"/add/";
 
@@ -235,16 +267,21 @@ public class DatabaseController2 {
             os.flush();
             os.close();
             
-            int responseCode = con.getResponseCode();
-            System.out.println(responseCode);
             System.out.println(con.getResponseMessage());
+            
+            if (con.getResponseCode() == 400 || con.getResponseCode() == 404){
+                System.out.println(con.getResponseMessage());
+                con.disconnect();
+                return false;
+            }
             con.disconnect();
+            return true;
         }catch(MalformedURLException ex){
             ex.printStackTrace();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        
+        return false;
     }
     /**
      * @param username  -   String - the user 
@@ -252,7 +289,7 @@ public class DatabaseController2 {
      * @param recordType-   String - the type of record
      * @param o         -   The object to be added
      */
-    public void editRecord(String username, String password, String recordType, Object o){
+    public boolean editRecord(String username, String password, String recordType, Object o){
         try {
             String urlStr = EC2_HOST+"/update/";
             URL url = new URL(urlStr);
@@ -272,12 +309,16 @@ public class DatabaseController2 {
             os.flush();
             os.close();
             
-            System.out.println(con.getResponseCode());
-            System.out.println(con.getResponseMessage());
+            if (con.getResponseCode() == 400 || con.getResponseCode()== 404){
+                con.disconnect();
+                System.out.println(con.getResponseMessage());
+                return false;
+            }
             con.disconnect();
         }catch(Exception e){
             e.printStackTrace();
         }
+        return false;
     }
     /**
      * @param username  -   the user
@@ -357,7 +398,59 @@ public class DatabaseController2 {
         }
         return -1;
     }
-    
+    /**
+     * @param username the user
+     * @param password the user's password
+     * @param id the id to be checked
+     * @param recordList the list to lookup the id
+     */
+    public boolean checkID(String username, String password, int id, String recordList){
+        try{
+            String urlStr = EC2_HOST+"/checkID/"+id+"/"+recordList;
+            URL url = new URL(urlStr);
+            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty(USER_AGENT, MOZILLA);
+            con.setDoInput(true);
+            System.out.println(con.getResponseCode());
+            if (con.getResponseCode() == 400 || con.getResponseCode() == 404){
+                con.disconnect();
+                return false;
+            }
+            con.disconnect();
+            return true;
+        }catch(Exception e){e.printStackTrace();}
+        return false;
+    }
+    public int getID(String username, String password, String name, String recordList){
+        try{
+            String urlStr = EC2_HOST+"/getID/"+username+"/"+password+"/"+name+ "/"+recordList;
+            System.out.println(urlStr);
+            URL url = new URL(urlStr);
+            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty(USER_AGENT, MOZILLA);
+            con.setDoInput(true);
+            
+            if (con.getResponseCode()==200){
+                InputStream is = con.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            
+                String line = "";
+                String data = "";
+                while((line = br.readLine())!=null){
+                    data += line;
+                }
+                return Integer.parseInt(data);
+            }
+            
+            
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return -1;
+    }
     private JSONObject recordToJson(Object o){
         JSONObject obj = new JSONObject();
         if (o instanceof Exercise){
