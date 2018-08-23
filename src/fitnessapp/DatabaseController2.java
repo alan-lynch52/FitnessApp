@@ -47,7 +47,11 @@ public class DatabaseController2 {
     public static final String CALORIE_RECORD_LIST = "calorieRecords";
     public static final String BODYWEIGHT_RECORD_LIST = "bodyweightRecords";
     
-    public static boolean addUserRequest(String username, String password){
+    /**
+     * @param username  -   the user to be created
+     * @param password  -   the users password
+     */
+    public boolean addUserRequest(String username, String password){
         try{
             String urlStr = EC2_HOST + "/add/user";
             URL url = new URL(urlStr);
@@ -77,7 +81,13 @@ public class DatabaseController2 {
         }
         return false;
     }
-    public static boolean updatePassword(String username, String oldPassword, 
+    /**
+     * @param username  -   the user
+     * @param oldPassword - the users original password
+     * @param newPassword   - the users new password
+     * @param confirmedPassword - the users new password confirmation
+     */
+    public boolean updatePassword(String username, String oldPassword, 
             String newPassword, String confirmedPassword){
         //make connection
         //make output stream
@@ -117,7 +127,11 @@ public class DatabaseController2 {
         }
         return false;
     }
-    public static boolean removeUser(String username, String password){
+    /**
+     * @param username  -   the user to be removed
+     * @param password  -   the password of the user
+     */
+    public boolean removeUser(String username, String password){
         try{
             String urlStr = EC2_HOST+"/remove/user/";
             URL url = new URL(urlStr);
@@ -151,7 +165,13 @@ public class DatabaseController2 {
         }
         return false;
     }
-    public static boolean deleteRequest(String username, String password, String rType, Object record){
+    /**
+     * @param username  -   the user
+     * @param password  -   the users password
+     * @param rType     -   the record type to be deleted
+     * @param record    -   the record to be deleted
+     */
+    public boolean deleteRecord(String username, String password, String rType, Object record){
         try{
             String urlStr = EC2_HOST+"/remove/";
             URL url = new URL(urlStr);
@@ -185,7 +205,13 @@ public class DatabaseController2 {
         }
         return true;
     }
-    public static void postRequest(String username, String password, String rType, Object record){
+    /**
+    * @param username   -   the user
+    * @param password   -   the users password
+    * @param rType      -   the record type to be added
+    * @param record     -   the record to be added
+    */
+    public void addRecord(String username, String password, String rType, Object record){
         try{
             String urlStr = EC2_HOST+"/add/";
 
@@ -220,7 +246,13 @@ public class DatabaseController2 {
         }
         
     }
-    public static void putRequest(String username, String password, String recordType, Object o){
+    /**
+     * @param username  -   String - the user 
+     * @param password  -   String - users password
+     * @param recordType-   String - the type of record
+     * @param o         -   The object to be added
+     */
+    public void editRecord(String username, String password, String recordType, Object o){
         try {
             String urlStr = EC2_HOST+"/update/";
             URL url = new URL(urlStr);
@@ -247,7 +279,12 @@ public class DatabaseController2 {
             e.printStackTrace();
         }
     }
-    public static Object[] getListRequest(String username, String password, String recordType){
+    /**
+     * @param username  -   the user
+     * @param password  -   the users password
+     * @param recordType-   the requested record type
+     */
+    public Object[] getRecordList(String username, String password, String recordType){
         try{
             String urlStr = EC2_HOST+"/users/"+username+"/"+password+"/"+recordType;
             URL url = new URL(urlStr);
@@ -282,7 +319,12 @@ public class DatabaseController2 {
         }
         return null;
     }
-    public static int generateID(String username, String password,String recordType){
+    /**
+     * @param username  -   the user
+     * @param password  -   the user's password
+     * @param recordType-   the record type to generate for
+     */
+    public int generateID(String username, String password,String recordType){
         try{
             String urlStr = EC2_HOST + "/" + username 
                     + "/" + password + "/generate/" + recordType + "/id";
@@ -316,7 +358,7 @@ public class DatabaseController2 {
         return -1;
     }
     
-    private static JSONObject recordToJson(Object o){
+    private JSONObject recordToJson(Object o){
         JSONObject obj = new JSONObject();
         if (o instanceof Exercise){
             obj.put("id", ((Exercise) o).getId());
@@ -345,7 +387,7 @@ public class DatabaseController2 {
         }
         return null;
     }
-    private static Object[] jsonArrayToObjectList(JSONArray arr, String listType){
+    private Object[] jsonArrayToObjectList(JSONArray arr, String listType){
         //iterate through json
         Object[] objArr = new Object[arr.size()];
         System.out.println(arr.size());
@@ -386,19 +428,9 @@ public class DatabaseController2 {
         return null;
     }
     public static void main(String[] args){
-        //deleteRequest("user1","pass123","Exercise",new Exercise());
         try{
-//            Object[] list = getListRequest("user1","pass123",BODYWEIGHT_RECORD_LIST);
-//            Exercise e = new Exercise(7,"Bicep Curl",new Date());
-//            postRequest("user1","pass123",EXERCISE, e);
-//            for (Object o : list){
-//                System.out.println(o);
-//            }
-//            generateID("user1","pass123",EXERCISE_LIST);
-//            addUserRequest("user3","wombo");
-//            updatePassword("user1","pass123","pass","pass");
-            //addUserRequest("test5","pw101");
-            removeUser("test5","pw101");
+            DatabaseController2 dc = new DatabaseController2();
+            //dc.addRecord(USER_AGENT, KEY_PASSWORD, EXERCISE, dc);
         }catch(Exception e){
             e.printStackTrace();
         }
