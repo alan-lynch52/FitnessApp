@@ -47,7 +47,7 @@ const database = fs.readFile("database.json", "utf8",(err, data) => {
     app.get("/users/:username/:password/:recordList/:date",(req,res)=>{
         console.log(req.params);
         const user = userList.find((obj) => {
-            return String(obj.username) === req.params.username 
+            return String(obj.username) === String(req.params.username)
                     && String(obj.password) === String(req.params.password);
         });
         if(!user) {
@@ -75,7 +75,40 @@ const database = fs.readFile("database.json", "utf8",(err, data) => {
         }
         res.statusMessage = "record list with specified date";
         res.status(200);res.send(recordDateList);
-    })
+    });
+    app.get("/users/:username/:password/:recordList/exID/:exID",(req,res)=>{
+                console.log(req.params);
+        const user = userList.find((obj) => {
+            return String(obj.username) === String(req.params.username)
+                    && String(obj.password) === String(req.params.password);
+        });
+        if(!user) {
+            res.statusMessage = "Username or password incorrect";
+            return res.status(404).send();
+        }
+        //find record list
+        const listType = req.params.recordList;
+        const recordList = user[listType];
+        if(!recordList){
+            res.statusMessage = req.params.recordList + ", Not found";
+            return res.status(404).send();
+        }
+        let recordSubList = [];
+        console.log(req.params.exID);
+        for (let i = 0; i < recordList.length; i++){
+            console.log(recordList[i].date);
+            if (String(recordList[i].exerciseID) === String(req.params.exID)){ 
+                console.log(recordList[i]);
+                recordSubList.push(recordList[i]);}
+        }
+        if (!recordSubList){
+            res.statusMessage = "No records with given date";
+            return res.status(404).send();
+        }
+
+        res.statusMessage = "exID Request success";
+        res.status(200).send(recordSubList);
+    });
     app.post("/add/user",(req, res) =>{
         let receivedData = "";
         req.on("data", (chunk) =>{
