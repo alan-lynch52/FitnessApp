@@ -113,5 +113,12 @@ public class AddExerciseRecordPanel extends JPanel{
     public JLabel getExNameLbl() {
         return exNameLbl;
     }
+
+    public void setExNameCb(String[] exNames) {
+        for (int i = 0; i < exNames.length; i++){
+            this.exNameCb.addItem(exNames[i]);
+        }
+    }
+    
     
 }

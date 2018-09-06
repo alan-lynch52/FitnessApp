@@ -47,6 +47,8 @@ public class DatabaseController2 {
     public static final String CALORIE_RECORD_LIST = "calorieRecords";
     public static final String BODYWEIGHT_RECORD_LIST = "bodyweightRecords";
     
+    private String username;
+    private String password;
     /**
      * @param username  -   the user to be created
      * @param password  -   the users password
@@ -110,6 +112,8 @@ public class DatabaseController2 {
                 return false;
             }
             con.disconnect();
+            this.username = username;
+            this.password = password;
             return true;
         } catch(Exception e){
             e.printStackTrace();
@@ -206,7 +210,7 @@ public class DatabaseController2 {
      * @param rType     -   the record type to be deleted
      * @param record    -   the record to be deleted
      */
-    public boolean deleteRecord(String username, String password, String rType, Object record){
+    public boolean deleteRecord(String rType, Object record){
         try{
             String urlStr = EC2_HOST+"/remove/";
             URL url = new URL(urlStr);
@@ -246,7 +250,7 @@ public class DatabaseController2 {
     * @param rType      -   the record type to be added
     * @param record     -   the record to be added
     */
-    public boolean addRecord(String username, String password, String rType, Object record){
+    public boolean addRecord(String rType, Object record){
         System.out.println("addRecord");
         try{
             String urlStr = EC2_HOST+"/add/";
@@ -293,7 +297,7 @@ public class DatabaseController2 {
      * @param recordType-   String - the type of record
      * @param o         -   The object to be added
      */
-    public boolean editRecord(String username, String password, String recordType, Object o){
+    public boolean editRecord(String recordType, Object o){
         try {
             String urlStr = EC2_HOST+"/update/";
             URL url = new URL(urlStr);
@@ -329,7 +333,7 @@ public class DatabaseController2 {
      * @param password  -   the users password
      * @param recordType-   the requested record type
      */
-    private Object[] getRecordList(String username, String password, String recordType){
+    private Object[] getRecordList(String recordType){
         try{
             String urlStr = EC2_HOST+"/users/"+username+"/"+password+"/"+recordType;
             URL url = new URL(urlStr);
@@ -366,9 +370,9 @@ public class DatabaseController2 {
         }
         return null;
     }
-    private Object[] getRecordList(String username, String password, String recordType, int fKey){
+    private Object[] getRecordList(String recordType, int exID){
                 try{
-            String urlStr = EC2_HOST+"/users/"+username+"/"+password+"/"+recordType+"/"+fKey;
+            String urlStr = EC2_HOST+"/users/"+username+"/"+password+"/"+recordType+"/exID/"+exID;
             URL url = new URL(urlStr);
             HttpURLConnection con = (HttpURLConnection)url.openConnection();
             con.setRequestMethod("GET");
@@ -401,7 +405,7 @@ public class DatabaseController2 {
         }
         return null;
     }
-    private Object[] getRecordList(String username, String password, String recordType, Date d){
+    private Object[] getRecordList(String recordType, Date d){
                 try{
             String urlStr = EC2_HOST+"/users/"+username+"/"+password+"/"+recordType+"/"+SDF.format(d);
             System.out.println(urlStr);
@@ -442,7 +446,7 @@ public class DatabaseController2 {
      * @param password  -   the user's password
      * @param recordListType-   the record type to generate for
      */
-    public int generateID(String username, String password,String recordListType){
+    public int generateID(String recordListType){
         try{
             String urlStr = EC2_HOST + "/" + username 
                     + "/" + password + "/generate/" + recordListType + "/id";
@@ -481,7 +485,7 @@ public class DatabaseController2 {
      * @param id the id to be checked
      * @param recordList the list to lookup the id
      */
-    public boolean checkID(String username, String password, int id, String recordList){
+    public boolean checkID(int id, String recordList){
         try{
             String urlStr = EC2_HOST+"/checkID/"+id+"/"+recordList;
             URL url = new URL(urlStr);
@@ -499,7 +503,7 @@ public class DatabaseController2 {
         }catch(Exception e){e.printStackTrace();}
         return false;
     }
-    public int getID(String username, String password, String name, String recordList){
+    public int getID(String name, String recordList){
         try{
             name = name.replace(" ", "%20");
             String urlStr = EC2_HOST+"/getID/"+username+"/"+password+"/"+name+ "/"+recordList;
@@ -559,9 +563,9 @@ public class DatabaseController2 {
         }
         return null;
     }
-    public Exercise[] getExerciseList(String username, String password){
+    public Exercise[] getExerciseList(){
         System.out.println("getExerciseList");
-        Object[] list = getRecordList(username, password, EXERCISE_LIST);
+        Object[] list = getRecordList(EXERCISE_LIST);
         if (list == null) return null;
         Exercise[] exList = new Exercise[list.length];
         for (int i = 0; i < list.length;i++){
@@ -571,9 +575,9 @@ public class DatabaseController2 {
         }
         return exList;
     }
-    public ExerciseRecord[] getExerciseRecordList(String username, String password){
+    public ExerciseRecord[] getExerciseRecordList(){
         System.out.println("getExerciseRecordList");
-        Object[] list = getRecordList(username, password, EXERCISE_RECORD_LIST);
+        Object[] list = getRecordList(EXERCISE_RECORD_LIST);
         if (list == null) return null;
         ExerciseRecord[] exrList = new ExerciseRecord[list.length];
         for (int i = 0; i < list.length;i++){
@@ -583,9 +587,9 @@ public class DatabaseController2 {
         }
         return exrList;
     }
-    public ExerciseRecord[] getExerciseRecordList(String username, String password, int exID){
+    public ExerciseRecord[] getExerciseRecordList(int exID){
         System.out.println("getExerciseRecordList");
-        Object[] list = getRecordList(username, password, EXERCISE_RECORD_LIST, exID);
+        Object[] list = getRecordList(EXERCISE_RECORD_LIST, exID);
         if (list == null)   return new ExerciseRecord[0];
         ExerciseRecord[] exrList = new ExerciseRecord[list.length];
         for (int i = 0; i < list.length;i++){
@@ -595,9 +599,9 @@ public class DatabaseController2 {
         }
         return exrList;
     }
-    public CalorieRecord[] getCalorieRecordList(String username, String password){
+    public CalorieRecord[] getCalorieRecordList(){
         System.out.println("getCalorieRecordList");
-        Object[] list = getRecordList(username, password, CALORIE_RECORD_LIST);
+        Object[] list = getRecordList(CALORIE_RECORD_LIST);
         if (list == null) return new CalorieRecord[0];
         CalorieRecord[] crList = new CalorieRecord[list.length];
         for (int i = 0; i < list.length;i++){
@@ -607,9 +611,9 @@ public class DatabaseController2 {
         }
         return crList;
     }
-    public CalorieRecord[] getCalorieRecordList(String username, String password, Date d){
+    public CalorieRecord[] getCalorieRecordList(Date d){
         System.out.println("getCalorieRecordList");
-        Object[] list = getRecordList(username, password, CALORIE_RECORD_LIST, d);
+        Object[] list = getRecordList(CALORIE_RECORD_LIST, d);
         if (list == null) return new CalorieRecord[0];
         CalorieRecord[] crList = new CalorieRecord[list.length];
         for (int i = 0; i < list.length;i++){
@@ -619,9 +623,9 @@ public class DatabaseController2 {
         }
         return crList;
     }
-    public BodyWeightRecord[] getBodyWeightRecordList(String username, String password){
+    public BodyWeightRecord[] getBodyWeightRecordList(){
         System.out.println("getBodyWeightRecordList");
-        Object[] list = getRecordList(username, password, BODYWEIGHT_RECORD_LIST);
+        Object[] list = getRecordList(BODYWEIGHT_RECORD_LIST);
         if (list == null) return new BodyWeightRecord[0];
         BodyWeightRecord[] bwrList = new BodyWeightRecord[list.length];
         for (int i = 0; i < list.length;i++){
@@ -634,7 +638,7 @@ public class DatabaseController2 {
     private Object[] jsonArrayToObjectList(JSONArray arr, String listType){
         //iterate through json
         Object[] objArr = new Object[arr.size()];
-        System.out.println(arr.size());
+        //System.out.println(arr.size());
         try{
         for (int i = 0; i < arr.size(); i++){
             JSONObject oJson = (JSONObject)arr.get(i);
@@ -673,11 +677,13 @@ public class DatabaseController2 {
     }
     public static void main(String[] args){
         try{
-//            DatabaseController2 dc2 = new DatabaseController2();
+            DatabaseController2 dc2 = new DatabaseController2();
 //            Object[] list = dc2.getRecordList("user1", "p123", CALORIE_RECORD_LIST, new Date());
 //            for (Object o : list){
 //                System.out.println(o);
 //            }
+            dc2.login("user1", "p123");
+            dc2.getExerciseRecordList(10);
         }catch(Exception e){
             e.printStackTrace();
         }

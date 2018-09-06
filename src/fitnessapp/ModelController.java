@@ -42,9 +42,9 @@ public class ModelController {
         this.password = null;
     }
     
-    public boolean i_ExerciseRecord(String exerciseName, double weight){
-        int id = dc.generateID(username, password, DatabaseController2.EXERCISE_RECORD_LIST);
-        int exId = dc.getID(username, password, exerciseName, DatabaseController2.EXERCISE_LIST);
+    public boolean createExerciseRecord(String exerciseName, double weight){
+        int id = dc.generateID(DatabaseController2.EXERCISE_RECORD_LIST);
+        int exId = dc.getID(exerciseName, DatabaseController2.EXERCISE_LIST);
         if (exId == -1){
             return false;
         }
@@ -52,35 +52,36 @@ public class ModelController {
         //check with DatabaseController to see if exId exists
         //check with DatabaseController to find next unique id
         //if both exist - create ExerciseRecord and pass to DatabaseController
-        return dc.addRecord(username, password, DatabaseController2.EXERCISE_RECORD, er);
+        return dc.addRecord(DatabaseController2.EXERCISE_RECORD, er);
     };
-    public boolean i_Exercise(String name){
+    public boolean createExercise(String name){
         //check with DatabaseController to find next unique id
-        int id = dc.generateID(username, password, DatabaseController2.EXERCISE_LIST);
+        int id = dc.generateID(DatabaseController2.EXERCISE_LIST);
+        if (id == -1) return false;
         Exercise e = new Exercise(id,name,new Date());
-        return dc.addRecord(username,password, DatabaseController2.EXERCISE, e);
+        return dc.addRecord(DatabaseController2.EXERCISE, e);
     };
-    public boolean i_CalorieRecord(int calories){
+    public boolean createCalorieRecord(int calories){
         
         //check with DatabaseController to find next unique id
-        int id = dc.generateID(username, password,DatabaseController2.CALORIE_RECORD_LIST);
+        int id = dc.generateID(DatabaseController2.CALORIE_RECORD_LIST);
         if (id == -1){
             return false;
         }
         CalorieRecord cr = new CalorieRecord(id,calories,new Date());
-        return dc.addRecord(username,password, DatabaseController2.CALORIE_RECORD, cr);
+        return dc.addRecord(DatabaseController2.CALORIE_RECORD, cr);
     };
-    public boolean i_BodyWeightRecord(double weight){
-        int id = dc.generateID(username, password, DatabaseController2.BODYWEIGHT_RECORD_LIST);
+    public boolean createBodyWeightRecord(double weight){
+        int id = dc.generateID(DatabaseController2.BODYWEIGHT_RECORD_LIST);
         if (id == -1){
             return false;
         }
         BodyWeightRecord bwr =  new BodyWeightRecord(id,weight,new Date());
-        return dc.addRecord(username,password,DatabaseController2.BODYWEIGHT_RECORD,bwr);
+        return dc.addRecord(DatabaseController2.BODYWEIGHT_RECORD,bwr);
     };
     
-    public String[] g_ExerciseList(){
-        Exercise[] list = (Exercise[])dc.getExerciseList(username, password);
+    public String[] getExerciseList(){
+        Exercise[] list = (Exercise[])dc.getExerciseList();
         
         int size = list.length;
         String[] eNames = new String[size];
@@ -90,12 +91,12 @@ public class ModelController {
         return eNames;
     }
     
-    public double[] g_ERWeight(String name){
+    public double[] getERWeightList(String name){
         //System.out.println("Name: "+name);
         
         //get the index position of an exercise given the name of the exercise
         int index = 0;
-        Exercise[] list = (Exercise[])dc.getExerciseList(username, password);
+        Exercise[] list = (Exercise[])dc.getExerciseList();
         for (int i = 0; i < list.length; i++){
             String curExName = list[i].getName();
             if (curExName.matches(name)){
@@ -108,13 +109,13 @@ public class ModelController {
         //System.out.println(curExId);
         //add all weight values to the list where the exercise id matches
         ExerciseRecord[] exerciseList = (ExerciseRecord[])
-                dc.getExerciseRecordList(username, password, curExId);
+                dc.getExerciseRecordList(curExId);
         if (exerciseList == null) return new double[0];
         double[] weights = new double[exerciseList.length];
         
         for (int i = 0; i < exerciseList.length; i++){
             weights[i] = exerciseList[i].getWeight();
-            System.out.println(weights[i]);
+            //System.out.println(weights[i]);
         }
         return weights;
         }
@@ -123,20 +124,20 @@ public class ModelController {
         }
         return null;
     };
-    public double[] g_BWRWeight(){
+    public double[] getBWRWeightList(){
         BodyWeightRecord[] bwrList = (BodyWeightRecord[])
-                dc.getBodyWeightRecordList(username, password);
+                dc.getBodyWeightRecordList();
         if (bwrList == null) return new double[0];
         double[] list = new double[bwrList.length];
         //get up to date version of bodyweight record list
         for (int i = 0; i < list.length; i++){
             list[i] = bwrList[i].getWeight();
-            System.out.println(list[i]);
+            //System.out.println(list[i]);
         }
         return list;
     }
-    public int g_DailyCalories(Date d){
-        CalorieRecord[] dailyCals = (CalorieRecord[])dc.getCalorieRecordList(username, password, d);
+    public int getDailyCalories(Date d){
+        CalorieRecord[] dailyCals = (CalorieRecord[])dc.getCalorieRecordList(d);
         if (dailyCals==null)return 0;
         int totalCals = 0;
         for(CalorieRecord cr : dailyCals){
@@ -144,10 +145,10 @@ public class ModelController {
         }
         return totalCals;
     }
-    public Object[] g_ExerciseRecordList(String name){
+    public Object[] getExerciseRecordList(String name){
         //get the index position of an exercise given the name of the exercise
         int index = 0;
-        Exercise[] exList = (Exercise[])dc.getExerciseList(username, password);
+        Exercise[] exList = (Exercise[])dc.getExerciseList();
         if (exList == null) return null;
         for (int i = 0; i < exList.length; i++){
             String curExName = exList[i].getName();
@@ -160,76 +161,60 @@ public class ModelController {
         //System.out.println(curExId);
         //add all weight values to the list where the exercise id matches
         ExerciseRecord[] exerciseList = (ExerciseRecord[])
-                dc.getExerciseRecordList(username,password,curExId);
+                dc.getExerciseRecordList(curExId);
         if (exerciseList == null) return null;
         Object[] list = new Object[exerciseList.length];
         
         for (int i = 0; i < exerciseList.length; i++){
             list[i] = exerciseList[i];
-            System.out.println(list[i]);
+            //System.out.println(list[i]);
         }
         return list;
     }
-    public Object[] g_BodyweightRecordList(){
+    public Object[] getBodyweightRecordList(){
         BodyWeightRecord[] bwrList = (BodyWeightRecord[])
-                dc.getBodyWeightRecordList(username, password);
+                dc.getBodyWeightRecordList();
         Object[] list = new Object[bwrList.length];
         for (int i = 0; i < list.length; i++){
             list[i] = bwrList[i];
         }
         return list;
     }
-    public Object[] g_CalorieRecordList(){
-        CalorieRecord[] dailyCalList = (CalorieRecord[])dc.getCalorieRecordList(username, password, new Date());
+    public Object[] getCalorieRecordList(){
+        CalorieRecord[] dailyCalList = (CalorieRecord[])dc.getCalorieRecordList(new Date());
         return dailyCalList;
     }
-    /*
-        Set of methods that, given an id, will return an 
-        object if it is found within the database
-    */
-    public ExerciseRecord g_ExerciseRecord(int id){
-        return null;
-    };
-    public Exercise g_Exercise(int id){
-        return null;
-    };
-    public CalorieRecord g_CalorieRecord(int id){
-        return null;
-    };
-    public BodyWeightRecord g_BodyWeightRecord(int id){
-        return null;
-    };
     /*
         Set of methods that:
         Given an id, delete the object from the database if it exists
     */
-    public boolean d_Exercise(String exName){
+    public boolean deleteExercise(String exName){
         for (Exercise e : exList){
             if (e.getName().matches(exName)){
-                if (dc.deleteRecord(username, password,DatabaseController2.EXERCISE,e)){
+                if (dc.deleteRecord(DatabaseController2.EXERCISE,e)){
                     return true;
                 }
             }
         }
         return false;
     }
-    public boolean d_ExerciseRecord(Object o){
+    public boolean deleteExerciseRecord(Object o){
         ExerciseRecord er  = (ExerciseRecord)o;
-        if (dc.deleteRecord(username,password, DatabaseController2.EXERCISE_RECORD,er)){
+        if (dc.deleteRecord(DatabaseController2.EXERCISE_RECORD,er)){
             return true;
         }
         return false;
     }
-    public boolean d_CalorieRecord(Object o){
+    public boolean deleteCalorieRecord(Object o){
         CalorieRecord cr = (CalorieRecord)o;
-        if (dc.deleteRecord(username,password, DatabaseController2.CALORIE_RECORD,cr)){
+        if (dc.deleteRecord(DatabaseController2.CALORIE_RECORD,cr)){
             return true;
         }
         return false;
     }
-    public boolean d_BodyWeightRecord(Object o){
+    public boolean deleteBodyWeightRecord(Object o){
         BodyWeightRecord bwr = (BodyWeightRecord)o;
-        if (dc.deleteRecord(username,password,DatabaseController2.BODYWEIGHT_RECORD,bwr)){
+        if (dc.deleteRecord(DatabaseController2.BODYWEIGHT_RECORD,bwr)){
             return true;
         }
         return false;
@@ -241,10 +226,10 @@ public class ModelController {
         System.out.println(loggedIn);
         if (loggedIn == true){
             System.out.println("Login Successful");
-            double[] weight = mc.g_BWRWeight();
+            double[] weight = mc.getBWRWeightList();
             System.out.println(weight[0]);
             
-            String[] exList = mc.g_ExerciseList();
+            String[] exList = mc.getExerciseList();
             System.out.println(exList[0]);
             
         }

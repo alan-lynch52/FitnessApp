@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>7</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>350</x>
+      <y>532</y>
+      <w>357</w>
+      <h>420</h>
+    </coordinates>
+    <panel_attributes>ModelController
+--
+-bwrList : LinkedList&lt;BodyWeightRecord&gt;
+-crList : LinkedList&lt;CalorieRecord&gt;
+-exList : LinkedList&lt;Exercise&gt;
+-exrList : LinkedList&lt;ExerciseRecord&gt;
+-dc : DatabaseController
+-password : String
+-username : String
+--
+ModelController()
+createBodyWeightRecord(double weight) : boolean
+createCalorieRecord(int calories) : boolean
+createExercise(String name): boolean
+createExerciseRecord(String exerciseName, double weight): boolean
+deleteBodyWeightRecord(Object o) : boolean
+deleteCalorieRecord(Object o) : boolean
+deleteExercise(String exName) : boolean
+deleteExerciseRecord(Object o) : boolean
+getBWRWeightList() : double[]
+getBodyweightRecordList() : Object[]
+getCalorieRecordList() : Object[]
+getDailyCalories(Date d) : int
+getERWeightList(String name) : double[]
+getExerciseList() : String[]
+getExerciseRecordList(String name) : Object[]
+userSignIn(String username, String password) : boolean
+userSignOut()
+--
+Responsibilities
+-- Take in raw data, and instantiate models
+-- Return Objects that are useable by the ViewController
+-- Communicate with the Database Controller</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>742</x>
+      <y>637</y>
+      <w>231</w>
+      <h>336</h>
+    </coordinates>
+    <panel_attributes>ViewController
+--
+-addBwRecordPanel : AddBodyweightRecordPanel
+-addCalRecordPanel : AddCalorieRecordPanel
+-addExPanel : AddExercisePanel
+-addExRecordPanel : AddExerciseRecordPanel
+-bwrp : BodyweightRecordPanel
+-crp : CalorieRecordPanel
+-frame : JFrame
+lp : LogInPanel
+modelController : ModelController
+mp : MainPanel
+--
+ViewController()
+init() : void
+initAddBodyweightRecordPanel(): void
+initAddCalorieRecordPanel(): void
+initAddExercisePanel(): void
+initAddExerciseRecordPanel(): void
+initBodyweightRecordPanel(): void
+initCalorieRecordPanel(): void
+initExerciseRecordPanel(): void
+initLogInPanel(): void
+initMainPanel(): void
+/+AbstractOperation()/
+--
+Responsibilities
+-- Instantiate and inject logic into JPanel's
+-- Communicate with model controller
+-- Pass and relay information to and from JPanel 
+to Model Controller</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>630</x>
+      <y>21</y>
+      <w>511</w>
+      <h>504</h>
+    </coordinates>
+    <panel_attributes>DatabaseController
+--
+- EC2_HOST : String
+- username : String
+- password : String
+- DATE_FORMAT : String
+- KEY_PASSWORD : String
+- KEY_RECORD_TYPE : String
+- KEY_USERNAME : String
+- MOZILLA : String
+- SDF : SimpleDateFormat
+- USER_AGENT : String
+/+ BODYWEIGHT_RECORD : String/
+/+ BODYWEIGHT_RECORD_LIST : String/
+/+ CALORIE_RECORD : String/
+/+ CALORIE_RECORD_LIST : String/
+/+ EXERCISE : String/
+/+ EXERCISE_LIST : String/
+/+ EXERCISE_RECORD : String/
+/+ EXERCISE_RECORD_LIST : String/
+--
+addRecord(String rType, Object record) : boolean
+addUser(String username, String password) : boolean
+checkID(int id, String recordList) : boolean
+deleteRecord(String rType, Object record) : boolean
+editRecord(String rType, Object record) : boolean
+generateID(String recordList) : int
+getBodyWeightRecordList() : BodyWeightRecord[]
+getCalorieRecordList() : CalorieRecord[]
+getCalorieRecordList(Date d) : CalorieRecord[]
+getExerciseList() : Exercise[]
+getExerciseRecordList() : ExerciseRecord[]
+getExerciseRecordList(int exID) : ExerciseRecord[]
+getID(String name, String recordList) : int
+login(String username, String password) : boolean
+removeUser(String username, String passowrd) : boolean
+updatePassword(String username, String oldPassword, String newPassword, String confirmedPassword) : boolean
+- getRecordList(String rType) : Object[]
+- getRecordList(String rType, int fKey): Object[]
+- getRecordList(String rType, Date d) : Object[]
+- jsonArrayToObjectList(JSONArray arr, String listType) : Object[]
+- recordToJson(Object o) : JSONObject
+--
+Responsibilities
+-- Send get, post, put and delete requests to the server
+-- Give useful return values that can be used by the ModelController</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>588</x>
+      <y>1043</y>
+      <w>189</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>AddBodyweightRecordPanel
+--
+-cancelBtn : JButton
+-submitBtn : JButton
+-weightLbl : JLabel
+-weightTxt : JTextField
+--
+Responsibilities
+-- Panel for Adding a bodyweight record</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>784</x>
+      <y>1183</y>
+      <w>189</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>AddCalorieRecordPanel :: JPanel
+--
+-caloriesLbl : JLabel
+-caloriesTxt : JTextField
+-cancelBtn : JButton
+-submitBtn : JButton
+--
+Responsibilities
+-- Panel to add new calorie records</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>588</x>
+      <y>1183</y>
+      <w>189</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>AddExercisePanel :: JPanel
+--
+-cancelBtn : JButton
+-nameLbl : JLabel
+-nameTxt : JTextField
+-submitBtn : JLabel
+--
+Responsibilities
+-- Panel for adding new exercises</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>784</x>
+      <y>1043</y>
+      <w>189</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>AddExerciseRecordPanel :: JPanel
+--
+-cancelBtn : JButton
+-exNameCb : JComboBox
+-exNameLbl : JLabel
+-submitBtn : JTextField
+-weightLbl : JLabel
+-weightTxt : JTextField
+--
++setExNameCb(String[] exNames) : void
+--
+Responsibilities
+-- Panel for adding new exercise record</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1148</x>
+      <y>1183</y>
+      <w>147</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>BodyweightRecordPanel :: JPanel
+--
+-addBtn : JButton
+-backBtn : JButton
+-bwrList : JList
+-chart : XYChart
+-removeBtn : JButton
+--
++BodyweightRecordPanel()
++getAddBtn() : JButton
++getBackBtn() : JButton
++getBwrList() : JList
++getChart() : XYChart
++getRemovedBtn() : JButton
+--
+Responsibilities
+-- Panel for displaying bodyweight records and graph</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1148</x>
+      <y>1043</y>
+      <w>147</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>CalorieRecordPanel :: JPanel
+--
+-addBtn : JButton
+-backBtn : JButton
+-caloriesLbl : JLabel
+-caloriesNameLbl : JLabel
+-crList : JList
+-removeBtn : JButton
+--
+Responsibilities
+-- Panel for displaying calorie records and graph</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>994</x>
+      <y>1183</y>
+      <w>147</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>ExercisePanel :: JPanel
+--
+-addBtn : JButton
+-backBtn : JButton
+-exerciseList : JList
+-removeBtn : JButton
+
+--
+Responsibilities
+-- Panel for displaying exercises</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>994</x>
+      <y>1043</y>
+      <w>147</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>ExerciseRecordPanel
+--
+-addBtn : JButton
+-backBtn : JButton
+-chart : XYChart
+-exerciseCmb : JComboBox
+-exrList : JList
+-removeBtn : JButton
+--
+Responsibilities
+-- Panel for displaying exercise records and graph</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>420</x>
+      <y>1043</y>
+      <w>147</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>LogInPanel :: JPanel
+--
+-passwordLbl : JLabel
+-passwordTxt : JTextField
+-signUpBtn : JButton
+-submitBtn : JButton
+-usernameLbl : JLabel
+-usernameTxt : JTextField
+--
+Responsibilities
+-- Panel for users to login to the app</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>420</x>
+      <y>1183</y>
+      <w>147</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>MainPanel :: JPanel
+--
+-bwrBtn : JButton
+-crBtn : JButton
+-exBtn : JButton
+-exrBtn : JButton
+--
+Responsibilities
+-- Main panel of app, connects to different record panels</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>413</x>
+      <y>1015</y>
+      <w>931</w>
+      <h>434</h>
+    </coordinates>
+    <panel_attributes>Views
+--
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>336</x>
+      <y>0</y>
+      <w>819</w>
+      <h>987</h>
+    </coordinates>
+    <panel_attributes>Controllers
+--
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>7</x>
+      <y>539</y>
+      <w>308</w>
+      <h>91</h>
+    </coordinates>
+    <panel_attributes>BodyWeightRecord
+--
+-id : int
+-recordDate : Date
+-weight : double
+--
+BodyWeightRecord()
+BodyWeightRecord(int id, double weight, Date recordDate)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>7</x>
+      <y>644</y>
+      <w>308</w>
+      <h>91</h>
+    </coordinates>
+    <panel_attributes>CalorieRecord
+--
+-id : int
+-recordDate : Date
+-calories : int
+--
+CalorieRecord()
+CalorieRecord(int id, int calories, Date recordDate)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>7</x>
+      <y>749</y>
+      <w>308</w>
+      <h>91</h>
+    </coordinates>
+    <panel_attributes>Exercise
+--
+-id : int
+-recordDate : Date
+-name : String
+--
+Exercise()
+Exercise(int id, String name, Date recordDate)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>7</x>
+      <y>847</y>
+      <w>308</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>ExerciseReocrd
+--
+-id : int
+-exerciseId : int
+-recordDate : Date
+-weight : double
+--
+ExerciseRecord()
+ExerciseRecord(int id, int exerciseId, double weight, Date recordDate)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>7</x>
+      <y>952</y>
+      <w>308</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>User
+--
+-username : String
+-password : String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>0</x>
+      <y>518</y>
+      <w>322</w>
+      <h>497</h>
+    </coordinates>
+    <panel_attributes>Models
+--
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1246</x>
+      <y>231</y>
+      <w>70</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>Database</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

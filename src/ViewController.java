@@ -82,8 +82,12 @@ public class ViewController {
                 String passwordVal = lp.getPasswordTxt().getText();
                 if (!usernameVal.matches("") && !passwordVal.matches("")){
                     try{
-                        modelController.userSignIn(usernameVal, passwordVal);
-                        init();
+                        if (modelController.userSignIn(usernameVal, passwordVal)){
+                            init();
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(lp, "Username or password incorrect");
+                        }
                         
                     }
                     catch(Exception ex){ex.printStackTrace();}
@@ -160,7 +164,7 @@ public class ViewController {
                 frame.revalidate();
             }
         });
-        ep.setExerciseNames(modelController.g_ExerciseList());
+        ep.setExerciseNames(modelController.getExerciseList());
         ep.getRemoveBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -168,9 +172,9 @@ public class ViewController {
                         "Are you sure you want to remove this exercise?");
                 if (choice == JOptionPane.YES_OPTION){
                     String exName = (String)ep.getExerciseList().getSelectedValue();
-                    if (modelController.d_Exercise(exName)){
+                    if (modelController.deleteExercise(exName)){
                         JOptionPane.showMessageDialog(ep, "Exercise Removed");
-                        String[] exNames = modelController.g_ExerciseList();
+                        String[] exNames = modelController.getExerciseList();
                         ep.getExerciseList().setListData(exNames);
                         ep.repaint();
                         ep.revalidate();
@@ -206,10 +210,10 @@ public class ViewController {
             }
         });
         DefaultComboBoxModel cmbModel = 
-                new DefaultComboBoxModel(modelController.g_ExerciseList());
+                new DefaultComboBoxModel(modelController.getExerciseList());
         erp.getExerciseCmb().setModel(cmbModel);
         String selected = (String)erp.getExerciseCmb().getSelectedItem();
-        double[] x = modelController.g_ERWeight(selected);
+        double[] x = modelController.getERWeightList(selected);
         try{
         if (!(x.length==0)){
             erp.getChart().addSeries(selected, x, x);
@@ -225,12 +229,12 @@ public class ViewController {
                 if (e.getStateChange() == 1){
                     String selected = (String)erp.getExerciseCmb().getSelectedItem();
                     //change exrList items
-                    Object[] records = modelController.g_ExerciseRecordList(selected);
+                    Object[] records = modelController.getExerciseRecordList(selected);
                     if (records != null)erp.getExrList().setListData(records);
                     //update graph
-                    double[] x = modelController.g_ERWeight(selected);
+                    double[] x = modelController.getERWeightList(selected);
                     if (x==null)return;
-                    String[] exNames = modelController.g_ExerciseList();
+                    String[] exNames = modelController.getExerciseList();
                     if (exNames==null)return;
                     try{
                         for (String ex : exNames){
@@ -252,11 +256,11 @@ public class ViewController {
             public void actionPerformed(ActionEvent e) {
                 Object o = erp.getExrList().getSelectedValue();
                 System.out.println(o);
-                if (modelController.d_ExerciseRecord(o)){
+                if (modelController.deleteExerciseRecord(o)){
                     JOptionPane.showMessageDialog(erp, "Record removed");
                     String selected = (String)erp.getExerciseCmb().getSelectedItem();
-                    erp.getExrList().setListData(modelController.g_ExerciseRecordList(selected));
-                    double[] weights = modelController.g_ERWeight(selected);
+                    erp.getExrList().setListData(modelController.getExerciseRecordList(selected));
+                    double[] weights = modelController.getERWeightList(selected);
                     erp.getChart().removeSeries(selected);
                     erp.getChart().addSeries(selected, weights);
                     erp.repaint();
@@ -288,20 +292,20 @@ public class ViewController {
                 
             }
         });
-        String dailyCals =  String.valueOf(modelController.g_DailyCalories(new Date()));
+        String dailyCals =  String.valueOf(modelController.getDailyCalories(new Date()));
         crp.getCaloriesLbl().setText(dailyCals);
-        Object[] crList = modelController.g_CalorieRecordList();
+        Object[] crList = modelController.getCalorieRecordList();
         if (crList!=null)crp.getCrList().setListData(crList);
         crp.getRemoveBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 Object selected = crp.getCrList().getSelectedValue();
-                if (modelController.d_CalorieRecord(selected)){
+                if (modelController.deleteCalorieRecord(selected)){
                     JOptionPane.showMessageDialog(crp, "Removed record");
                     //update calorie list
-                    Object[] crList = modelController.g_CalorieRecordList();
+                    Object[] crList = modelController.getCalorieRecordList();
                     if (crList!=null)crp.getCrList().setListData(crList);
-                    String dailyCals = String.valueOf(modelController.g_DailyCalories(new Date()));
+                    String dailyCals = String.valueOf(modelController.getDailyCalories(new Date()));
                     crp.getCaloriesLbl().setText(dailyCals);
                     crp.repaint();
                     crp.revalidate();
@@ -331,20 +335,20 @@ public class ViewController {
                 frame.revalidate();
             }
         });
-        double[] x = modelController.g_BWRWeight();
+        double[] x = modelController.getBWRWeightList();
         if (x.length != 0){
             bwrp.getChart().addSeries("Bodyweight", x);
         }
-        Object[] list = modelController.g_BodyweightRecordList();
+        Object[] list = modelController.getBodyweightRecordList();
         bwrp.getBwrList().setListData(list);
         bwrp.getRemoveBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 Object o = bwrp.getBwrList().getSelectedValue();
-                if (modelController.d_BodyWeightRecord(o)){
+                if (modelController.deleteBodyWeightRecord(o)){
                     JOptionPane.showMessageDialog(bwrp, "Removed record");
-                    Object[] list = modelController.g_BodyweightRecordList();
-                    double[] weight = modelController.g_BWRWeight();
+                    Object[] list = modelController.getBodyweightRecordList();
+                    double[] weight = modelController.getBWRWeightList();
                     bwrp.getBwrList().setListData(list);
                     bwrp.getChart().removeSeries("Bodyweight");
                     if (weight.length != 0){
@@ -378,15 +382,15 @@ public class ViewController {
                 String weightInput = addCalRecordPanel.getCaloriesTxt().getText();
                 //send this value to the model controller
                 int weight = Integer.parseInt(weightInput);
-                if (!modelController.i_CalorieRecord(weight)){
+                if (!modelController.createCalorieRecord(weight)){
                     JOptionPane.showMessageDialog(addCalRecordPanel,
                             "Failed to add to database.",
                             "Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
-                    String dailyCals =  String.valueOf(modelController.g_DailyCalories(new Date()));
+                    String dailyCals =  String.valueOf(modelController.getDailyCalories(new Date()));
                     crp.getCaloriesLbl().setText(dailyCals);
-                    Object[] crList = modelController.g_CalorieRecordList();
+                    Object[] crList = modelController.getCalorieRecordList();
                     crp.getCrList().setListData(crList);
                     frame.setContentPane(crp);
                     frame.repaint();
@@ -419,17 +423,14 @@ public class ViewController {
                 }
                 else{
                     double d = Double.parseDouble(weight);
-                    if(modelController.i_ExerciseRecord(exName, d)){
+                    if(modelController.createExerciseRecord(exName, d)){
                         JOptionPane.showMessageDialog(addExPanel, "Success");
-                        
-                        
-                        
                         frame.setContentPane(erp);
                         erp.repaint();
                         erp.revalidate();
                         
                         String selected = (String)erp.getExerciseCmb().getSelectedItem();
-                        double[] x = modelController.g_ERWeight(selected);
+                        double[] x = modelController.getERWeightList(selected);
                         double[] emptyArr = new double[x.length];
                         erp.getChart().updateXYSeries(selected, x, x, emptyArr);
                     }
@@ -439,7 +440,9 @@ public class ViewController {
                 }
             }
         });
-        //add arrays to chart!
+        //add exercise names to combo box
+        String[] exNames = modelController.getExerciseList();
+        addExRecordPanel.setExNameCb(exNames);
     }
     private void initAddExercisePanel(){
         addExPanel.getCancelBtn().addActionListener(new ActionListener(){
@@ -460,10 +463,10 @@ public class ViewController {
                             "Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else{
-                    if (modelController.i_Exercise(exName)){
+                    if (modelController.createExercise(exName)){
                         JOptionPane.showMessageDialog(addExPanel, 
                                 "Success");
-                        String[] exNames = modelController.g_ExerciseList();
+                        String[] exNames = modelController.getExerciseList();
                         ep.getExerciseList().setListData(exNames);
                         frame.setContentPane(ep);
                         ep.repaint();
@@ -496,11 +499,11 @@ public class ViewController {
                 }
                 else{
                     double weightVal = Double.parseDouble(weight);
-                    if (modelController.i_BodyWeightRecord(weightVal)){
+                    if (modelController.createBodyWeightRecord(weightVal)){
                         JOptionPane.showMessageDialog(addBwRecordPanel,
                                 "Success");
-                        Object[] bwrList = modelController.g_BodyweightRecordList();
-                        double[] x = modelController.g_BWRWeight();
+                        Object[] bwrList = modelController.getBodyweightRecordList();
+                        double[] x = modelController.getBWRWeightList();
                         double[] errBar = new double[x.length];
                         try
                         {
