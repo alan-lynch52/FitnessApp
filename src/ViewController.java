@@ -23,6 +23,7 @@ import javax.swing.SwingUtilities;
 public class ViewController {
     private ModelController modelController;
     private JFrame frame;
+    private LogInPanel lp;
     private MainPanel mp;
     private ExercisePanel ep;
     private ExerciseRecordPanel erp;
@@ -44,40 +45,65 @@ public class ViewController {
                 frame.setSize(380, 700);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 
-                //Init JPanels
-                mp = new MainPanel();
-                ep = new ExercisePanel();
-                erp = new ExerciseRecordPanel();
-                crp = new CalorieRecordPanel();
-                bwrp = new BodyweightRecordPanel();
-                addExPanel = new AddExercisePanel();
-                addExRecordPanel = new AddExerciseRecordPanel(modelController.g_ExerciseList());
-                addCalRecordPanel = new AddCalorieRecordPanel();
-                addBwRecordPanel = new AddBodyweightRecordPanel();
-                
-                //Initialize Buttons for each JPanel
-                initMainPanel();
-                initExercisePanel();
-                initExerciseRecordPanel();
-                initCalorieRecordPanel();
-                initBodyweightRecordPanel();
-                initAddCalorieRecordPanel();
-                initAddExerciseRecordPanel();
-                initAddExercisePanel();
-                initAddBodyweightRecordPanel();
-                
+                lp = new LogInPanel();
 
-                
-                //Set content to main panel as default
-                frame.setContentPane(mp);
-                
+                frame.setContentPane(lp);
+                initLogInPanel();
+            }
+        });
+    }
+    private void init(){
+        //Init JPanels
+        mp = new MainPanel();
+        ep = new ExercisePanel();
+        erp = new ExerciseRecordPanel();
+        crp = new CalorieRecordPanel();
+        bwrp = new BodyweightRecordPanel();
+        addExPanel = new AddExercisePanel();
+        addExRecordPanel = new AddExerciseRecordPanel();
+        addCalRecordPanel = new AddCalorieRecordPanel();
+        addBwRecordPanel = new AddBodyweightRecordPanel();
+
+        //Initialize Buttons for each JPanel
+        initMainPanel();
+        
+        
+
+
+
+        //Set content to main panel as default
+        frame.setContentPane(mp);
+    }
+    private void initLogInPanel(){
+        lp.getSubmitBtn().addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String usernameVal = lp.getUsernameTxt().getText();
+                String passwordVal = lp.getPasswordTxt().getText();
+                if (!usernameVal.matches("") && !passwordVal.matches("")){
+                    try{
+                        modelController.userSignIn(usernameVal, passwordVal);
+                        init();
+                        
+                    }
+                    catch(Exception ex){ex.printStackTrace();}
+                }
+                else{
+                    System.out.println("Password or Username empty");
+                }
             }
         });
     }
     private void initMainPanel(){
+        
+        
+        
+        
         mp.getExBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("Event hit");
+                initExercisePanel();
                 frame.setContentPane(ep);
                 ep.repaint();
                 ep.revalidate();
@@ -86,6 +112,8 @@ public class ViewController {
         mp.getExrBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("Event hit");
+                initExerciseRecordPanel();
                 frame.setContentPane(erp);
                 erp.repaint();
                 erp.revalidate();
@@ -94,6 +122,8 @@ public class ViewController {
         mp.getCrBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("Event hit");
+                initCalorieRecordPanel();
                 frame.setContentPane(crp);
                 crp.repaint();
                 crp.revalidate();
@@ -102,6 +132,8 @@ public class ViewController {
         mp.getBwrBtn().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("Event hit");
+                initBodyweightRecordPanel();
                 frame.setContentPane(bwrp);
                 bwrp.repaint();
                 bwrp.revalidate();
@@ -120,6 +152,9 @@ public class ViewController {
         ep.getAddBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                
+                initAddExercisePanel();
+        
                 frame.setContentPane(addExPanel);
                 frame.repaint();
                 frame.revalidate();
@@ -162,6 +197,9 @@ public class ViewController {
         erp.getAddBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                initAddExerciseRecordPanel();
+        
                 frame.setContentPane(addExRecordPanel);
                 frame.repaint();
                 frame.revalidate();
@@ -188,10 +226,12 @@ public class ViewController {
                     String selected = (String)erp.getExerciseCmb().getSelectedItem();
                     //change exrList items
                     Object[] records = modelController.g_ExerciseRecordList(selected);
-                    erp.getExrList().setListData(records);
+                    if (records != null)erp.getExrList().setListData(records);
                     //update graph
                     double[] x = modelController.g_ERWeight(selected);
+                    if (x==null)return;
                     String[] exNames = modelController.g_ExerciseList();
+                    if (exNames==null)return;
                     try{
                         for (String ex : exNames){
                             erp.getChart().removeSeries(ex);
@@ -240,6 +280,8 @@ public class ViewController {
         crp.getAddBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                initAddCalorieRecordPanel();
+                
                 frame.setContentPane(addCalRecordPanel);
                 frame.repaint();
                 frame.revalidate();
@@ -249,7 +291,7 @@ public class ViewController {
         String dailyCals =  String.valueOf(modelController.g_DailyCalories(new Date()));
         crp.getCaloriesLbl().setText(dailyCals);
         Object[] crList = modelController.g_CalorieRecordList();
-        crp.getCrList().setListData(crList);
+        if (crList!=null)crp.getCrList().setListData(crList);
         crp.getRemoveBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -258,7 +300,7 @@ public class ViewController {
                     JOptionPane.showMessageDialog(crp, "Removed record");
                     //update calorie list
                     Object[] crList = modelController.g_CalorieRecordList();
-                    crp.getCrList().setListData(crList);
+                    if (crList!=null)crp.getCrList().setListData(crList);
                     String dailyCals = String.valueOf(modelController.g_DailyCalories(new Date()));
                     crp.getCaloriesLbl().setText(dailyCals);
                     crp.repaint();
@@ -283,6 +325,7 @@ public class ViewController {
         bwrp.getAddBtn().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                initAddBodyweightRecordPanel();
                 frame.setContentPane(addBwRecordPanel);
                 frame.repaint();
                 frame.revalidate();

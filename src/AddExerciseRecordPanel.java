@@ -26,7 +26,7 @@ public class AddExerciseRecordPanel extends JPanel{
     private JLabel weightLbl;
     private JComboBox exNameCb;
     private JLabel exNameLbl;
-    AddExerciseRecordPanel(String[] exNames){
+    AddExerciseRecordPanel(){
         this.setSize(380,800);
         this.setLayout(new GridBagLayout());
         Color darkBlue = new Color(34, 35, 38);
@@ -39,7 +39,7 @@ public class AddExerciseRecordPanel extends JPanel{
         cancelBtn = new JButton("Cancel");
         weightTxt = new JTextField(5);
         weightLbl = new JLabel("Weight:");
-        exNameCb = new JComboBox(exNames);
+        exNameCb = new JComboBox();
         exNameLbl = new JLabel("Exercise:");
         
         submitBtn.setBackground(btnColor);

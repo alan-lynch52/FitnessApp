@@ -98,11 +98,14 @@ public class DatabaseController2 {
             JSONObject user = new JSONObject();
             user.put(KEY_USERNAME, username);
             user.put(KEY_PASSWORD, password);
+            System.out.println(user);
             os.write(user.toJSONString().getBytes(StandardCharsets.UTF_8));
             os.flush();
             os.close();
+            System.out.println(con.getResponseMessage());
+            System.out.println(con.getResponseCode());
             if (con.getResponseCode() == 400 || con.getResponseCode() == 404){
-                System.out.println("Bad Request");
+                
                 con.disconnect();
                 return false;
             }
@@ -244,9 +247,10 @@ public class DatabaseController2 {
     * @param record     -   the record to be added
     */
     public boolean addRecord(String username, String password, String rType, Object record){
+        System.out.println("addRecord");
         try{
             String urlStr = EC2_HOST+"/add/";
-
+            System.out.println(urlStr);
             URL url = new URL(urlStr);
             HttpURLConnection con = (HttpURLConnection)url.openConnection();
             con.setRequestMethod("POST");
@@ -325,9 +329,82 @@ public class DatabaseController2 {
      * @param password  -   the users password
      * @param recordType-   the requested record type
      */
-    public Object[] getRecordList(String username, String password, String recordType){
+    private Object[] getRecordList(String username, String password, String recordType){
         try{
             String urlStr = EC2_HOST+"/users/"+username+"/"+password+"/"+recordType;
+            URL url = new URL(urlStr);
+            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty(USER_AGENT,MOZILLA);
+            con.setDoInput(true);
+            
+            String line = "";
+            String data = "";
+            System.out.println(con.getResponseCode());
+            System.out.println(con.getResponseMessage());
+            if (con.getResponseCode() == 400 || con.getResponseCode() == 404){
+                return null;
+            }
+            else{
+                InputStream is = con.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                while((line = br.readLine()) != null){
+                    data += line;
+                }
+                JSONParser parser = new JSONParser();
+                JSONArray o = (JSONArray)parser.parse(data);
+                Object[] list = jsonArrayToObjectList(o, recordType);
+                for (Object obj : list){
+                    System.out.println(obj);
+                }
+                con.disconnect();
+                return list;
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    private Object[] getRecordList(String username, String password, String recordType, int fKey){
+                try{
+            String urlStr = EC2_HOST+"/users/"+username+"/"+password+"/"+recordType+"/"+fKey;
+            URL url = new URL(urlStr);
+            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty(USER_AGENT,MOZILLA);
+            con.setDoInput(true);
+            
+            String line = "";
+            String data = "";
+            System.out.println(con.getResponseCode());
+            System.out.println(con.getResponseMessage());
+            if (con.getResponseCode() == 400 || con.getResponseCode() == 404){
+                return null;
+            }
+            else{
+                InputStream is = con.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                while((line = br.readLine()) != null){
+                    data += line;
+                }
+                JSONParser parser = new JSONParser();
+                JSONArray o = (JSONArray)parser.parse(data);
+                Object[] list = jsonArrayToObjectList(o, recordType);
+
+                con.disconnect();
+                return list;
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    private Object[] getRecordList(String username, String password, String recordType, Date d){
+                try{
+            String urlStr = EC2_HOST+"/users/"+username+"/"+password+"/"+recordType+"/"+SDF.format(d);
+            System.out.println(urlStr);
             URL url = new URL(urlStr);
             HttpURLConnection con = (HttpURLConnection)url.openConnection();
             con.setRequestMethod("GET");
@@ -363,12 +440,12 @@ public class DatabaseController2 {
     /**
      * @param username  -   the user
      * @param password  -   the user's password
-     * @param recordType-   the record type to generate for
+     * @param recordListType-   the record type to generate for
      */
-    public int generateID(String username, String password,String recordType){
+    public int generateID(String username, String password,String recordListType){
         try{
             String urlStr = EC2_HOST + "/" + username 
-                    + "/" + password + "/generate/" + recordType + "/id";
+                    + "/" + password + "/generate/" + recordListType + "/id";
             System.out.println(urlStr);
             URL url = new URL(urlStr);
             HttpURLConnection con = (HttpURLConnection)url.openConnection();
@@ -424,6 +501,7 @@ public class DatabaseController2 {
     }
     public int getID(String username, String password, String name, String recordList){
         try{
+            name = name.replace(" ", "%20");
             String urlStr = EC2_HOST+"/getID/"+username+"/"+password+"/"+name+ "/"+recordList;
             System.out.println(urlStr);
             URL url = new URL(urlStr);
@@ -431,7 +509,8 @@ public class DatabaseController2 {
             con.setRequestMethod("GET");
             con.setRequestProperty(USER_AGENT, MOZILLA);
             con.setDoInput(true);
-            
+            System.out.println(con.getResponseCode());
+            System.out.println(con.getResponseMessage());
             if (con.getResponseCode()==200){
                 InputStream is = con.getInputStream();
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -480,6 +559,78 @@ public class DatabaseController2 {
         }
         return null;
     }
+    public Exercise[] getExerciseList(String username, String password){
+        System.out.println("getExerciseList");
+        Object[] list = getRecordList(username, password, EXERCISE_LIST);
+        if (list == null) return null;
+        Exercise[] exList = new Exercise[list.length];
+        for (int i = 0; i < list.length;i++){
+            if (list[i] instanceof Exercise){
+                exList[i] = (Exercise)list[i];
+            }
+        }
+        return exList;
+    }
+    public ExerciseRecord[] getExerciseRecordList(String username, String password){
+        System.out.println("getExerciseRecordList");
+        Object[] list = getRecordList(username, password, EXERCISE_RECORD_LIST);
+        if (list == null) return null;
+        ExerciseRecord[] exrList = new ExerciseRecord[list.length];
+        for (int i = 0; i < list.length;i++){
+            if (list[i] instanceof ExerciseRecord){
+                exrList[i] = (ExerciseRecord)list[i];
+            }
+        }
+        return exrList;
+    }
+    public ExerciseRecord[] getExerciseRecordList(String username, String password, int exID){
+        System.out.println("getExerciseRecordList");
+        Object[] list = getRecordList(username, password, EXERCISE_RECORD_LIST, exID);
+        if (list == null)   return new ExerciseRecord[0];
+        ExerciseRecord[] exrList = new ExerciseRecord[list.length];
+        for (int i = 0; i < list.length;i++){
+            if (list[i] instanceof ExerciseRecord){
+                exrList[i] = (ExerciseRecord)list[i];
+            }
+        }
+        return exrList;
+    }
+    public CalorieRecord[] getCalorieRecordList(String username, String password){
+        System.out.println("getCalorieRecordList");
+        Object[] list = getRecordList(username, password, CALORIE_RECORD_LIST);
+        if (list == null) return new CalorieRecord[0];
+        CalorieRecord[] crList = new CalorieRecord[list.length];
+        for (int i = 0; i < list.length;i++){
+            if (list[i] instanceof CalorieRecord){
+                crList[i] = (CalorieRecord)list[i];
+            }
+        }
+        return crList;
+    }
+    public CalorieRecord[] getCalorieRecordList(String username, String password, Date d){
+        System.out.println("getCalorieRecordList");
+        Object[] list = getRecordList(username, password, CALORIE_RECORD_LIST, d);
+        if (list == null) return new CalorieRecord[0];
+        CalorieRecord[] crList = new CalorieRecord[list.length];
+        for (int i = 0; i < list.length;i++){
+            if (list[i] instanceof CalorieRecord){
+                crList[i] = (CalorieRecord)list[i];
+            }
+        }
+        return crList;
+    }
+    public BodyWeightRecord[] getBodyWeightRecordList(String username, String password){
+        System.out.println("getBodyWeightRecordList");
+        Object[] list = getRecordList(username, password, BODYWEIGHT_RECORD_LIST);
+        if (list == null) return new BodyWeightRecord[0];
+        BodyWeightRecord[] bwrList = new BodyWeightRecord[list.length];
+        for (int i = 0; i < list.length;i++){
+            if (list[i] instanceof BodyWeightRecord){
+                bwrList[i] = (BodyWeightRecord)list[i];
+            }
+        }
+        return bwrList;
+    }
     private Object[] jsonArrayToObjectList(JSONArray arr, String listType){
         //iterate through json
         Object[] objArr = new Object[arr.size()];
@@ -522,8 +673,11 @@ public class DatabaseController2 {
     }
     public static void main(String[] args){
         try{
-            DatabaseController2 dc = new DatabaseController2();
-            //dc.addRecord(USER_AGENT, KEY_PASSWORD, EXERCISE, dc);
+//            DatabaseController2 dc2 = new DatabaseController2();
+//            Object[] list = dc2.getRecordList("user1", "p123", CALORIE_RECORD_LIST, new Date());
+//            for (Object o : list){
+//                System.out.println(o);
+//            }
         }catch(Exception e){
             e.printStackTrace();
         }
